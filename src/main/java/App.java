@@ -22,7 +22,7 @@ public class App {
 
         server.start();
 
-        System.out.println("Servidor iniciado en puerto 9999");
+        System.out.println("Servidor iniciado en puerto " + port);
     }
 
     static class FormularioHandler implements HttpHandler {
