@@ -28,14 +28,26 @@ public class App {
     static class FormularioHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            File file = new File(System.getProperty("user.dir") + "/formulario.html");
-
-            byte[] bytes = java.nio.file.Files.readAllBytes(file.toPath());
-            exchange.getResponseHeaders().add("Content-Type", "text/html; charset=utf-8");
-            exchange.sendResponseHeaders(200, bytes.length);
-            OutputStream os = exchange.getResponseBody();
-            os.write(bytes);
-            os.close();
+            try {
+                String ruta = System.getProperty("user.dir") + "/formulario.html";
+                System.out.println("Buscando formulario en: " + ruta);
+                File file = new File(ruta);
+                System.out.println("¿Existe el archivo? " + file.exists());
+                byte[] bytes = java.nio.file.Files.readAllBytes(file.toPath());
+                exchange.getResponseHeaders().add("Content-Type", "text/html; charset=utf-8");
+                exchange.sendResponseHeaders(200, bytes.length);
+                OutputStream os = exchange.getResponseBody();
+                os.write(bytes);
+                os.close();
+            } catch (Exception e) {
+                System.out.println("Error en FormularioHandler: " + e.getMessage());
+                e.printStackTrace();
+                String response = "Error: " + e.getMessage();
+                exchange.sendResponseHeaders(500, response.length());
+                OutputStream os = exchange.getResponseBody();
+                os.write(response.getBytes());
+                os.close();
+            }
         }
     }
 
