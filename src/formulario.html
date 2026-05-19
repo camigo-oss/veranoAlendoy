@@ -603,11 +603,10 @@
           };
 
           try {
-            const res = await fetch("http://localhost:9999/guardar", {
-              method: "POST",
-              body: new URLSearchParams(data),
-            });
-
+            const res = await fetch(
+              "https://web-production-4c8c.up.railway.app/guardar",
+              { method: "POST", body: new URLSearchParams(data) },
+            );
             const json = await res.json();
 
             if (json.ok) {
