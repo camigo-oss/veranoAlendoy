@@ -17,7 +17,7 @@ public class Insertar {
     public int insertarPadre(String nombre_padre, String telefono, String direccion, String email, String comentario) {
 
         try {
-            sSQL = "INSERT INTO alendoyverano.Padre (nombre_padre,telefono, direccion, email, comentario) VALUES(?,?,?,?,?);";
+            sSQL = "INSERT INTO railway.Padre (nombre_padre,telefono, direccion, email, comentario) VALUES(?,?,?,?,?);";
             PreparedStatement pstm = conn.prepareStatement(
                     sSQL,
                     PreparedStatement.RETURN_GENERATED_KEYS);
@@ -48,7 +48,7 @@ public class Insertar {
             String curso, String discapacidad, String derivacionss, String derivacion_gadir, int auth_actividades,
             int auth_imagenes) {
         try {
-            sSQL = "INSERT INTO alendoyverano.Hijo (id_padre,nombre_apellido, fecha_nacimiento, colegio, curso, discapacidad, derivacionss,derivacion_gadir,auth_actividades,auth_imagenes) VALUES(?,?,?,?,?,?,?,?,?,?);";
+            sSQL = "INSERT INTO railway.Hijo (id_padre,nombre_apellido, fecha_nacimiento, colegio, curso, discapacidad, derivacionss,derivacion_gadir,auth_actividades,auth_imagenes) VALUES(?,?,?,?,?,?,?,?,?,?);";
             PreparedStatement pstm = conn.prepareStatement(sSQL);
 
             if (id_padre != 0) {
