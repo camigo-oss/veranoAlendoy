@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ficha de inscripción</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f4f4f0;
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .page-title h1 { font-size: 1.6rem; font-weight: 600; color: #1a1a1a; }
+    .page-title p  { font-size: 0.9rem; color: #666; margin-top: 4px; }
+
+    form {
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    /* ── sección ── */
+    .section {
+      background: #fff;
+      border: 1px solid #e0ddd6;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+    }
+    .section-title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #999;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #eee;
+    }
+
+    /* ── grid ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 560px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    /* ── campos ── */
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label { font-size: 0.8rem; color: #555; }
+    .field input,
+    .field textarea,
+    .field select {
+      font-family: inherit;
+      font-size: 0.9rem;
+      padding: 8px 10px;
+      border: 1px solid #d4d1cb;
+      border-radius: 8px;
+      background: #fafafa;
+      color: #1a1a1a;
+      transition: border-color .15s, box-shadow .15s;
+      outline: none;
+    }
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      border-color: #7f77dd;
+      box-shadow: 0 0 0 3px rgba(127,119,221,.12);
+      background: #fff;
+    }
+    .field textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+
+    /* ── radio pills ── */
+    .radio-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .radio-pill {
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 14px;
+      border: 1px solid #d4d1cb;
+      border-radius: 20px;
+      background: #fafafa;
+      cursor: pointer;
+      font-size: 0.88rem;
+      color: #333;
+      transition: border-color .15s, background .15s, color .15s;
+      user-select: none;
+    }
+    .radio-pill input[type="radio"] { display: none; }
+    .radio-pill.selected {
+      border-color: #534ab7;
+      background: #eeedfe;
+      color: #3c3489;
+      font-weight: 500;
+    }
+
+    /* ── autorizaciones ── */
+    .auth-card {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 14px 16px;
+      border: 1px solid #e0ddd6;
+      border-radius: 10px;
+      background: #fafafa;
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+      margin-bottom: 10px;
+    }
+    .auth-card:last-child { margin-bottom: 0; }
+    .auth-card.checked {
+      border-color: #1d9e75;
+      background: #e1f5ee;
+    }
+    .auth-check {
+      width: 20px; height: 20px; flex-shrink: 0;
+      border: 1.5px solid #bbb;
+      border-radius: 5px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; color: #fff;
+      transition: background .15s, border-color .15s;
+      margin-top: 2px;
+    }
+    .auth-card.checked .auth-check { background: #1d9e75; border-color: #1d9e75; }
+    .auth-card.checked .auth-check::after { content: '✓'; }
+    .auth-body .auth-title { font-size: 0.9rem; font-weight: 600; color: #1a1a1a; margin-bottom: 3px; }
+    .auth-card.checked .auth-title { color: #085041; }
+    .auth-body .auth-desc { font-size: 0.8rem; color: #666; line-height: 1.5; }
+    .auth-card.checked .auth-desc { color: #0f6e56; }
+
+    /* ── hidden checkbox state ── */
+    .auth-card input[type="checkbox"] { display: none; }
+
+    /* ── mensajes de éxito / error ── */
+    #msg {
+      display: none;
+      max-width: 720px;
+      margin: 0 auto 1rem;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    #msg.ok    { background: #e1f5ee; color: #085041; border: 1px solid #9fe1cb; }
+    #msg.error { background: #fcebeb; color: #501313; border: 1px solid #f7c1c1; }
+
+    /* ── botón enviar ── */
+    .btn-submit {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%;
+      padding: 12px;
+      background: #534ab7;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s, transform .1s;
+    }
+    .btn-submit:hover  { background: #3c3489; }
+    .btn-submit:active { transform: scale(0.99); }
+    .btn-submit:disabled { background: #aaa; cursor: not-allowed; }
+
+    .required { color: #c0392b; margin-left: 2px; }
+  </style>
+</head>
+<body>
+
+  <div class="page-title">
+    <h1>Ficha de inscripción</h1>
+    <p>Completa todos los campos para inscribir al menor en las actividades.</p>
+  </div>
+
+  <div id="msg"></div>
+
+  <form id="inscripcion" novalidate>
+
+    <!-- DATOS DEL FAMILIAR -->
+    <div class="section">
+      <div class="section-title">Datos del padre / madre</div>
+      <div class="grid-2">
+        <div class="field">
+          <label for="nombre_padre">Nombre completo <span class="required">*</span></label>
+          <input type="text" id="nombre_padre" name="nombre_padre" placeholder="Nombre y apellidos" required />
+        </div>
+        <div class="field">
+          <label for="telefono">Teléfono <span class="required">*</span></label>
+          <input type="tel" id="telefono" name="telefono" placeholder="000 000 000" required />
+        </div>
+        <div class="field">
+          <label for="email">Correo electrónico</label>
+          <input type="email" id="email" name="email" placeholder="correo@ejemplo.com" />
+        </div>
+        <div class="field">
+          <label for="direccion">Dirección</label>
+          <input type="text" id="direccion" name="direccion" placeholder="Calle, número, localidad" />
+        </div>
+      </div>
+    </div>
+
+    <!-- DATOS DEL MENOR -->
+    <div class="section">
+      <div class="section-title">Datos del menor</div>
+      <div class="grid-2">
+        <div class="field">
+          <label for="nombre_hijo">Nombre y apellidos <span class="required">*</span></label>
+          <input type="text" id="nombre_hijo" name="nombre_hijo" placeholder="Nombre Apellido Apellido" required />
+        </div>
+        <div class="field">
+          <label for="fecha_nacimiento">Fecha de nacimiento <span class="required">*</span></label>
+          <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required />
+        </div>
+        <div class="field">
+          <label for="colegio">Colegio</label>
+          <input type="text" id="colegio" name="colegio" placeholder="Nombre del centro educativo" />
+        </div>
+        <div class="field">
+          <label for="curso">Curso</label>
+          <input type="text" id="curso" name="curso" placeholder="Ej. 3.º Primaria" />
+        </div>
+      </div>
+
+      <div class="field" style="margin-top: 1rem;">
+        <label>Discapacidad reconocida</label>
+        <div class="radio-group">
+          <label class="radio-pill" onclick="selectRadio(this, 'discapacidad')">
+            <input type="radio" name="discapacidad" value="si" /> Sí
+          </label>
+          <label class="radio-pill" onclick="selectRadio(this, 'discapacidad')">
+            <input type="radio" name="discapacidad" value="no" /> No
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- DERIVACIONES -->
+    <div class="section">
+      <div class="section-title">Derivaciones</div>
+      <div class="grid-2">
+        <div class="field">
+          <label>Derivación de servicios sociales</label>
+          <div class="radio-group">
+            <label class="radio-pill" onclick="selectRadio(this, 'derivacion_ss')">
+              <input type="radio" name="derivacion_ss" value="si" /> Sí
+            </label>
+            <label class="radio-pill" onclick="selectRadio(this, 'derivacion_ss')">
+              <input type="radio" name="derivacion_ss" value="no" /> No
+            </label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Derivación de GADIR</label>
+          <div class="radio-group">
+            <label class="radio-pill" onclick="selectRadio(this, 'derivacion_gadir')">
+              <input type="radio" name="derivacion_gadir" value="si" /> Sí
+            </label>
+            <label class="radio-pill" onclick="selectRadio(this, 'derivacion_gadir')">
+              <input type="radio" name="derivacion_gadir" value="no" /> No
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMENTARIOS -->
+    <div class="section">
+      <div class="section-title">Comentarios</div>
+      <div class="field">
+        <label for="comentario">Observaciones o información adicional</label>
+        <textarea id="comentario" name="comentario" placeholder="Alergias, necesidades especiales, observaciones…"></textarea>
+      </div>
+    </div>
+
+    <!-- AUTORIZACIONES -->
+    <div class="section">
+      <div class="section-title">Autorizaciones</div>
+
+      <div class="auth-card" id="card-act" onclick="toggleAuth('card-act', 'auth_actividades')">
+        <input type="hidden" name="auth_actividades" id="auth_actividades" value="0" />
+        <div class="auth-check"></div>
+        <div class="auth-body">
+          <div class="auth-title">Autorizo la participación en actividades</div>
+          <div class="auth-desc">Autorizo a mi hijo/a a participar en todas las actividades organizadas por la entidad, asumiendo los compromisos de asistencia y las normas de convivencia establecidas.</div>
+        </div>
+      </div>
+
+      <div class="auth-card" id="card-img" onclick="toggleAuth('card-img', 'auth_imagenes')">
+        <input type="hidden" name="auth_imagenes" id="auth_imagenes" value="0" />
+        <div class="auth-check"></div>
+        <div class="auth-body">
+          <div class="auth-title">Autorizo el uso de imágenes</div>
+          <div class="auth-desc">Autorizo a la entidad a capturar y utilizar fotografías y/o vídeos de mi hijo/a con fines informativos, divulgativos o de comunicación institucional, sin ánimo de lucro.</div>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn-submit" id="btnEnviar">
+      &#128394; Enviar inscripción
+    </button>
+
+  </form>
+
+  <script>
+    /* ── radio pills ── */
+    function selectRadio(el, name) {
+      document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+        r.closest('.radio-pill').classList.remove('selected');
+      });
+      el.classList.add('selected');
+      el.querySelector('input[type="radio"]').checked = true;
+    }
+
+    /* ── autorizaciones toggle ── */
+    function toggleAuth(cardId, inputId) {
+      const card  = document.getElementById(cardId);
+      const input = document.getElementById(inputId);
+      const on = card.classList.toggle('checked');
+      input.value = on ? '1' : '0';
+    }
+
+    /* ── envío vía fetch ── */
+    document.getElementById('inscripcion').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const msg = document.getElementById('msg');
+      const btn = document.getElementById('btnEnviar');
+
+      // validación mínima
+      const requeridos = ['nombre_padre', 'telefono', 'nombre_hijo', 'fecha_nacimiento'];
+      let ok = true;
+      requeridos.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el.value.trim()) { el.style.borderColor = '#c0392b'; ok = false; }
+        else el.style.borderColor = '';
+      });
+      if (!ok) {
+        msg.textContent = 'Por favor, rellena los campos obligatorios marcados en rojo.';
+        msg.className = 'error'; msg.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Enviando…';
+
+      const data = new FormData(this);
+
+      try {
+        const res  = await fetch('guardar_inscripcion.php', { method: 'POST', body: data });
+        const json = await res.json();
+
+        if (json.ok) {
+          msg.textContent = '✓ Inscripción guardada correctamente. ¡Gracias!';
+          msg.className = 'ok';
+          this.reset();
+          document.querySelectorAll('.radio-pill').forEach(p => p.classList.remove('selected'));
+          document.querySelectorAll('.auth-card').forEach(c => c.classList.remove('checked'));
+          document.getElementById('auth_actividades').value = '0';
+          document.getElementById('auth_imagenes').value    = '0';
+        } else {
+          msg.textContent = 'Error: ' + (json.error || 'No se pudo guardar la inscripción.');
+          msg.className = 'error';
+        }
+      } catch (err) {
+        msg.textContent = 'Error de conexión. Comprueba que el servidor está activo.';
+        msg.className = 'error';
+      }
+
+      msg.style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      btn.disabled = false;
+      btn.innerHTML = '&#128394; Enviar inscripción';
+    });
+  </script>
+</body>
+</html>
