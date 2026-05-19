@@ -29,19 +29,16 @@ public class App {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             try {
-                String ruta = System.getProperty("user.dir") + "/formulario.html";
-                System.out.println("Buscando formulario en: " + ruta);
-                File file = new File(ruta);
-                System.out.println("¿Existe el archivo? " + file.exists());
-                byte[] bytes = java.nio.file.Files.readAllBytes(file.toPath());
+                InputStream is = App.class.getResourceAsStream("/formulario.html");
+                System.out.println("¿Recurso encontrado? " + (is != null));
+                byte[] bytes = is.readAllBytes();
                 exchange.getResponseHeaders().add("Content-Type", "text/html; charset=utf-8");
                 exchange.sendResponseHeaders(200, bytes.length);
                 OutputStream os = exchange.getResponseBody();
                 os.write(bytes);
                 os.close();
             } catch (Exception e) {
-                System.out.println("Error en FormularioHandler: " + e.getMessage());
-                e.printStackTrace();
+                System.out.println("Error: " + e.getMessage());
                 String response = "Error: " + e.getMessage();
                 exchange.sendResponseHeaders(500, response.length());
                 OutputStream os = exchange.getResponseBody();
