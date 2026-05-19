@@ -16,12 +16,26 @@ public class App {
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
 
         server.createContext("/guardar", new MiHandler());
+        server.createContext("/", new FormularioHandler());
 
         server.setExecutor(null);
 
         server.start();
 
         System.out.println("Servidor iniciado en puerto 9999");
+    }
+
+    static class FormularioHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            File file = new File("formulario.html");
+            byte[] bytes = java.nio.file.Files.readAllBytes(file.toPath());
+            exchange.getResponseHeaders().add("Content-Type", "text/html; charset=utf-8");
+            exchange.sendResponseHeaders(200, bytes.length);
+            OutputStream os = exchange.getResponseBody();
+            os.write(bytes);
+            os.close();
+        }
     }
 
     static class MiHandler implements HttpHandler {
