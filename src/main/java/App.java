@@ -12,8 +12,8 @@ import java.util.Map;
 public class App {
 
     public static void main(String[] args) throws Exception {
-
-        HttpServer server = HttpServer.create(new InetSocketAddress(9999), 0);
+        int port = Integer.parseInt(System.getenv().getOrDefault("PORT", "9999"));
+        HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
 
         server.createContext("/guardar", new MiHandler());
 
