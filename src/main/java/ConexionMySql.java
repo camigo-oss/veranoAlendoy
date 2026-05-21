@@ -8,7 +8,7 @@ public class ConexionMySql {
     public String driver = "com.mysql.cj.jdbc.Driver";
 
     // Nombre de la base de datos
-    public String database = "alendoy";
+    public String database = "defaultdb";
     public String hostname = "veranoalendoy2026-veranoalendoy2026.i.aivencloud.com";
 
     // Puerto
