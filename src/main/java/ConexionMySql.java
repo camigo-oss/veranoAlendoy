@@ -8,21 +8,21 @@ public class ConexionMySql {
     public String driver = "com.mysql.cj.jdbc.Driver";
 
     // Nombre de la base de datos
-    public String database = "railway";
-    public String hostname = "viaduct.proxy.rlwy.net";
+    public String database = "alendoy";
+    public String hostname = "veranoalendoy2026-veranoalendoy2026.i.aivencloud.com";
 
     // Puerto
-    public String port = "23797";
+    public String port = "20012";
 
     // Ruta de nuestra base de datos (desactivamos el uso de SSL con
     // "?useSSL=false")
-    public String url = "jdbc:mysql://" + hostname + ":" + port + "/" + database + "?useSSL=false";
+    public String url = "jdbc:mysql://" + hostname + ":" + port + "/" + database + "?useSSL=true";
 
     // Nombre de usuario
-    public String username = "root";
+    public String username = "avnadmin";
 
     // Clave de usuario
-    public String password = "DhtZRfVikwveKLGwXuexlAduBFMNieWl";
+    public String password = "AVNS_rzSeofzltCV3iR8Afsh";
 
     public Connection conectarMySql() {
         Connection conn = null;
