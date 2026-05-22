@@ -200,35 +200,30 @@
         tbody.innerHTML = datos
           .map(
             (d, i) => `
-        <tr>
-          <td>${d.id}</td>
-          <td><strong>${d.nombre_padre}</strong><br><small style="color:#888">${d.direccion}</small></td>
-          <td>${d.telefono}</td>
-          <td>${d.email}</td>
-          <td><strong>${d.nombre_hijo}</strong></td>
-          <td>${d.fecha_nacimiento}</td>
-          <td>${d.colegio}</td>
-          <td>${d.curso}</td>
-          <td>${badge(d.discapacidad)}</td>
-          <td>${badge(d.derivacion_ss)}</td>
-          <td>${badge(d.derivacion_gadir)}</td>
-          <td>${d.auth_actividades ? '<span class="badge badge-auth">✓</span>' : '<span class="badge badge-no">✗</span>'}</td>
-          <td>${d.auth_imagenes ? '<span class="badge badge-auth">✓</span>' : '<span class="badge badge-no">✗</span>'}</td>
-          <td>${d.comentario}</td>
-        </tr>
-      `,
+              <tr>
+                <td>${d.id}</td>
+                <td><strong>${d.nombre_padre}</strong><br><small style="color:#888">${d.direccion}</small></td>
+                <td>${d.telefono}</td>
+                <td>${d.email}</td>
+                <td><strong>${d.nombre_hijo}</strong></td>
+                <td>${d.fecha_nacimiento}</td>
+                <td>${d.colegio}</td>
+                <td>${d.curso}</td>
+                <td>${badge(d.discapacidad)}</td>
+                <td>${badge(d.derivacion_ss)}</td>
+                <td>${badge(d.derivacion_gadir)}</td>
+                <td>${d.auth_actividades ? '<span class="badge badge-auth">✓</span>' : '<span class="badge badge-no">✗</span>'}</td>
+                <td>${d.auth_imagenes ? '<span class="badge badge-auth">✓</span>' : '<span class="badge badge-no">✗</span>'}</td>
+                <td>${d.comentario}</td>
+              </tr>
+            `,
           )
           .join("");
       }
 
       function filtrar() {
-        const q = document.getElementById("buscar").value.toLowerCase();
-        const filtrados = todos.filter(
-          (d) =>
-            d.nombre_padre.toLowerCase().includes(q) ||
-            d.nombre_hijo.toLowerCase().includes(q) ||
-            d.email.toLowerCase().includes(q) ||
-            d.telefono.includes(q),
+        const filtrados = todos.filter((d) =>
+          Object.values(d).some((v) => String(v).toLowerCase().includes(q)),
         );
         renderizar(filtrados);
         document.getElementById("count").textContent =
