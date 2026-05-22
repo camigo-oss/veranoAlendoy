@@ -222,6 +222,13 @@
       }
 
       function filtrar() {
+        const q = document.getElementById("buscar").value.toLowerCase().trim();
+        if (!q) {
+          renderizar(todos);
+          document.getElementById("count").textContent =
+            todos.length + " inscripciones";
+          return;
+        }
         const filtrados = todos.filter((d) =>
           Object.values(d).some((v) => String(v).toLowerCase().includes(q)),
         );
