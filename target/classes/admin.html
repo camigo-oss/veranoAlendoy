@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panel de inscripciones</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: #f4f4f0;
+        color: #1a1a1a;
+        padding: 2rem 1rem;
+      }
+      h1 {
+        font-size: 1.4rem;
+        margin-bottom: 0.5rem;
+      }
+      .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      .search {
+        padding: 8px 12px;
+        border: 1px solid #d4d1cb;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        width: 250px;
+        outline: none;
+      }
+      .search:focus {
+        border-color: #7f77dd;
+      }
+      .btn {
+        padding: 8px 16px;
+        background: #534ab7;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: #3c3489;
+      }
+      .btn-green {
+        background: #1d9e75;
+      }
+      .btn-green:hover {
+        background: #157a5a;
+      }
+      .count {
+        font-size: 0.85rem;
+        color: #666;
+      }
+      .table-wrap {
+        overflow-x: auto;
+        background: #fff;
+        border: 1px solid #e0ddd6;
+        border-radius: 12px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+      }
+      th {
+        background: #f8f8f6;
+        padding: 10px 12px;
+        text-align: left;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #888;
+        border-bottom: 1px solid #eee;
+        white-space: nowrap;
+      }
+      td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #f0ede8;
+        vertical-align: top;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: #fafaf8;
+      }
+      .badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+      .badge-si {
+        background: #e1f5ee;
+        color: #085041;
+      }
+      .badge-no {
+        background: #f0ede8;
+        color: #888;
+      }
+      .badge-auth {
+        background: #eeedfe;
+        color: #3c3489;
+      }
+      .empty {
+        text-align: center;
+        padding: 3rem;
+        color: #aaa;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top">
+      <div>
+        <h1>Panel de inscripciones</h1>
+        <p class="count" id="count">Cargando...</p>
+      </div>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap">
+        <input
+          class="search"
+          type="text"
+          id="buscar"
+          placeholder="Buscar por nombre..."
+          oninput="filtrar()"
+        />
+        <button class="btn btn-green" onclick="exportarCSV()">
+          ⬇ Exportar CSV
+        </button>
+        <button class="btn" onclick="window.location.href = '/'">
+          ← Formulario
+        </button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Padre/Madre</th>
+            <th>Teléfono</th>
+            <th>Email</th>
+            <th>Menor</th>
+            <th>F. Nacimiento</th>
+            <th>Colegio</th>
+            <th>Curso</th>
+            <th>Discapacidad</th>
+            <th>Der. SS</th>
+            <th>Der. GADIR</th>
+            <th>Auth. Act.</th>
+            <th>Auth. Img.</th>
+            <th>Comentario</th>
+          </tr>
+        </thead>
+        <tbody id="tabla"></tbody>
+      </table>
+    </div>
+
+    <script>
+      const pass = new URLSearchParams(window.location.search).get("pass");
+      let todos = [];
+
+      async function cargar() {
+        try {
+          const res = await fetch("/admin?pass=" + encodeURIComponent(pass));
+          todos = await res.json();
+          renderizar(todos);
+          document.getElementById("count").textContent =
+            todos.length + " inscripciones";
+        } catch (e) {
+          document.getElementById("tabla").innerHTML =
+            '<tr><td colspan="14" class="empty">Error al cargar los datos</td></tr>';
+        }
+      }
+
+      function badge(val, siLabel, noLabel) {
+        const esSi = val === "si" || val === 1 || val === true;
+        return `<span class="badge ${esSi ? "badge-si" : "badge-no"}">${esSi ? siLabel || "Sí" : noLabel || "No"}</span>`;
+      }
+
+      function renderizar(datos) {
+        const tbody = document.getElementById("tabla");
+        if (!datos.length) {
+          tbody.innerHTML =
+            '<tr><td colspan="14" class="empty">No hay inscripciones</td></tr>';
+          return;
+        }
+        tbody.innerHTML = datos
+          .map(
+            (d, i) => `
+        <tr>
+          <td>${d.id}</td>
+          <td><strong>${d.nombre_padre}</strong><br><small style="color:#888">${d.direccion}</small></td>
+          <td>${d.telefono}</td>
+          <td>${d.email}</td>
+          <td><strong>${d.nombre_hijo}</strong></td>
+          <td>${d.fecha_nacimiento}</td>
+          <td>${d.colegio}</td>
+          <td>${d.curso}</td>
+          <td>${badge(d.discapacidad)}</td>
+          <td>${badge(d.derivacion_ss)}</td>
+          <td>${badge(d.derivacion_gadir)}</td>
+          <td>${d.auth_actividades ? '<span class="badge badge-auth">✓</span>' : '<span class="badge badge-no">✗</span>'}</td>
+          <td>${d.auth_imagenes ? '<span class="badge badge-auth">✓</span>' : '<span class="badge badge-no">✗</span>'}</td>
+          <td>${d.comentario}</td>
+        </tr>
+      `,
+          )
+          .join("");
+      }
+
+      function filtrar() {
+        const q = document.getElementById("buscar").value.toLowerCase();
+        const filtrados = todos.filter(
+          (d) =>
+            d.nombre_padre.toLowerCase().includes(q) ||
+            d.nombre_hijo.toLowerCase().includes(q) ||
+            d.email.toLowerCase().includes(q) ||
+            d.telefono.includes(q),
+        );
+        renderizar(filtrados);
+        document.getElementById("count").textContent =
+          filtrados.length + " de " + todos.length + " inscripciones";
+      }
+
+      function exportarCSV() {
+        const cabecera = [
+          "ID",
+          "Padre/Madre",
+          "Teléfono",
+          "Email",
+          "Dirección",
+          "Menor",
+          "F.Nacimiento",
+          "Colegio",
+          "Curso",
+          "Discapacidad",
+          "Der.SS",
+          "Der.GADIR",
+          "Auth.Act",
+          "Auth.Img",
+          "Comentario",
+        ];
+        const filas = todos.map((d) =>
+          [
+            d.id,
+            d.nombre_padre,
+            d.telefono,
+            d.email,
+            d.direccion,
+            d.nombre_hijo,
+            d.fecha_nacimiento,
+            d.colegio,
+            d.curso,
+            d.discapacidad,
+            d.derivacion_ss,
+            d.derivacion_gadir,
+            d.auth_actividades ? "Sí" : "No",
+            d.auth_imagenes ? "Sí" : "No",
+            d.comentario,
+          ].map((v) => '"' + String(v).replace(/"/g, '""') + '"'),
+        );
+        const csv = [cabecera, ...filas].map((r) => r.join(",")).join("\n");
+        const blob = new Blob(["\ufeff" + csv], {
+          type: "text/csv;charset=utf-8;",
+        });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "inscripciones.csv";
+        a.click();
+      }
+
+      cargar();
+    </script>
+  </body>
+</html>

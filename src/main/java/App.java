@@ -23,6 +23,7 @@ public class App {
 
         server.createContext("/guardar", new MiHandler());
         server.createContext("/", new FormularioHandler());
+        server.createContext("/admin", new AdminHandler());
 
         server.setExecutor(null);
 
@@ -143,6 +144,107 @@ public class App {
             }
 
             return map;
+        }
+    }
+
+    static class AdminHandler implements HttpHandler {
+        private static final String PASSWORD = "alendoy2026";
+
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            // Verificar contraseña por query param
+            String query = exchange.getRequestURI().getQuery();
+            boolean autenticado = query != null && query.contains("pass=alendoy2026");
+
+            if (!autenticado) {
+                InputStream is = App.class.getResourceAsStream("/login.html");
+                byte[] bytes = is.readAllBytes();
+                exchange.getResponseHeaders().add("Content-Type", "text/html; charset=utf-8");
+                exchange.sendResponseHeaders(200, bytes.length);
+                OutputStream os = exchange.getResponseBody();
+                os.write(bytes);
+                os.close();
+                return;
+            }
+            // Si pide HTML sirve admin.html
+            String acceptHeader = exchange.getRequestHeaders().getFirst("Accept");
+            if (acceptHeader != null && acceptHeader.contains("text/html")) {
+                InputStream is = App.class.getResourceAsStream("/admin.html");
+                byte[] bytes = is.readAllBytes();
+                exchange.getResponseHeaders().add("Content-Type", "text/html; charset=utf-8");
+                exchange.sendResponseHeaders(200, bytes.length);
+                OutputStream os = exchange.getResponseBody();
+                os.write(bytes);
+                os.close();
+                return;
+            }
+
+            // Obtener datos de la BD
+            try {
+                ConexionMySql sql = new ConexionMySql();
+                java.sql.Connection conn = sql.conectarMySql();
+                java.sql.PreparedStatement stmt = conn.prepareStatement(
+                        "SELECT p.id, p.nombre_padre, p.telefono, p.email, p.direccion, " +
+                                "h.nombre_apellido, h.fecha_nacimiento, h.colegio, h.curso, " +
+                                "h.discapacidad, h.derivacionss, h.derivacion_gadir, " +
+                                "h.auth_actividades, h.auth_imagenes, p.comentario " +
+                                "FROM alendoy.Padre p JOIN alendoy.Hijo h ON p.id = h.id_padre " +
+                                "ORDER BY p.id DESC");
+                java.sql.ResultSet rs = stmt.executeQuery();
+
+                StringBuilder json = new StringBuilder("[");
+                boolean first = true;
+                while (rs.next()) {
+                    if (!first)
+                        json.append(",");
+                    first = false;
+                    json.append("{")
+                            .append("\"id\":").append(rs.getInt("id")).append(",")
+                            .append("\"nombre_padre\":\"").append(rs.getString("nombre_padre")).append("\",")
+                            .append("\"telefono\":\"").append(rs.getString("telefono")).append("\",")
+                            .append("\"email\":\"").append(rs.getString("email") != null ? rs.getString("email") : "")
+                            .append("\",")
+                            .append("\"direccion\":\"")
+                            .append(rs.getString("direccion") != null ? rs.getString("direccion") : "").append("\",")
+                            .append("\"nombre_hijo\":\"").append(rs.getString("nombre_apellido")).append("\",")
+                            .append("\"fecha_nacimiento\":\"").append(rs.getString("fecha_nacimiento")).append("\",")
+                            .append("\"colegio\":\"")
+                            .append(rs.getString("colegio") != null ? rs.getString("colegio") : "").append("\",")
+                            .append("\"curso\":\"").append(rs.getString("curso") != null ? rs.getString("curso") : "")
+                            .append("\",")
+                            .append("\"discapacidad\":\"")
+                            .append(rs.getString("discapacidad") != null ? rs.getString("discapacidad") : "")
+                            .append("\",")
+                            .append("\"derivacion_ss\":\"")
+                            .append(rs.getString("derivacionss") != null ? rs.getString("derivacionss") : "")
+                            .append("\",")
+                            .append("\"derivacion_gadir\":\"")
+                            .append(rs.getString("derivacion_gadir") != null ? rs.getString("derivacion_gadir") : "")
+                            .append("\",")
+                            .append("\"auth_actividades\":").append(rs.getInt("auth_actividades")).append(",")
+                            .append("\"auth_imagenes\":").append(rs.getInt("auth_imagenes")).append(",")
+                            .append("\"comentario\":\"")
+                            .append(rs.getString("comentario") != null ? rs.getString("comentario") : "").append("\"")
+                            .append("}");
+                }
+                json.append("]");
+                conn.close();
+
+                exchange.getResponseHeaders().add("Content-Type", "application/json; charset=utf-8");
+                byte[] bytes = json.toString().getBytes("UTF-8");
+                exchange.sendResponseHeaders(200, bytes.length);
+                OutputStream os = exchange.getResponseBody();
+                os.write(bytes);
+                os.close();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                String response = "[]";
+                exchange.sendResponseHeaders(500, response.length());
+                OutputStream os = exchange.getResponseBody();
+                os.write(response.getBytes());
+                os.close();
+            }
         }
     }
 }
