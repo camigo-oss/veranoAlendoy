@@ -340,9 +340,10 @@
             return false;
           if (fNombreHijo && !d.nombre_hijo.toLowerCase().includes(fNombreHijo))
             return false;
+
           if (
             fDiscapacidad &&
-            d.discapacidad.toLowerCase() !== fDiscapacidad.toLowerCase()
+            d.discapacidad.toUpperCase() !== fDiscapacidad.toUpperCase()
           )
             return false;
           if (fDerivSS && d.derivacion_ss !== fDerivSS) return false;

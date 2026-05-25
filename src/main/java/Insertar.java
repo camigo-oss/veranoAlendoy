@@ -87,7 +87,7 @@ public class Insertar {
             if (discapacidad != null) {
                 pstm.setString(6, discapacidad);
             } else {
-                pstm.setString(6, "NO");
+                pstm.setString(6, "No");
             }
 
             pstm.setString(7, derivacionss);
