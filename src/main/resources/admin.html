@@ -340,7 +340,11 @@
             return false;
           if (fNombreHijo && !d.nombre_hijo.toLowerCase().includes(fNombreHijo))
             return false;
-          if (fDiscapacidad && d.discapacidad !== fDiscapacidad) return false;
+          if (
+            fDiscapacidad &&
+            d.discapacidad.toLowerCase() !== fDiscapacidad.toLowerCase()
+          )
+            return false;
           if (fDerivSS && d.derivacion_ss !== fDerivSS) return false;
           if (fDerivGadir && d.derivacion_gadir !== fDerivGadir) return false;
           if (fAuthAct !== "" && String(d.auth_actividades) !== fAuthAct)
