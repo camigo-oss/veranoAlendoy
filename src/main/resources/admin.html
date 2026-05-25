@@ -232,8 +232,8 @@
           <label>Discapacidad</label>
           <select id="f-discapacidad" onchange="filtrar()">
             <option value="">Todos</option>
-            <option value="si">Sí</option>
-            <option value="no">No</option>
+            <option value="SI">Sí</option>
+            <option value="NO">No</option>
           </select>
         </div>
         <div class="filter-field select-field">
@@ -343,11 +343,19 @@
 
           if (
             fDiscapacidad &&
-            d.discapacidad.toUpperCase() !== fDiscapacidad.toUpperCase()
+            d.discapacidad.toLowerCase() !== fDiscapacidad.toLowerCase()
           )
             return false;
-          if (fDerivSS && d.derivacion_ss !== fDerivSS) return false;
-          if (fDerivGadir && d.derivacion_gadir !== fDerivGadir) return false;
+          if (
+            fDerivSS &&
+            d.derivacion_ss.toLowerCase() !== fDerivSS.toLowerCase()
+          )
+            return false;
+          if (
+            fDerivGadir &&
+            d.derivacion_gadir.toLowerCase() !== fDerivGadir.toLowerCase()
+          )
+            return false;
           if (fAuthAct !== "" && String(d.auth_actividades) !== fAuthAct)
             return false;
           if (fAuthImg !== "" && String(d.auth_imagenes) !== fAuthImg)
