@@ -18,26 +18,19 @@
       }
       h1 {
         font-size: 1.4rem;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.3rem;
       }
       .top {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
         flex-wrap: wrap;
         gap: 1rem;
       }
-      .search {
-        padding: 8px 12px;
-        border: 1px solid #d4d1cb;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        width: 250px;
-        outline: none;
-      }
-      .search:focus {
-        border-color: #7f77dd;
+      .count {
+        font-size: 0.85rem;
+        color: #666;
       }
       .btn {
         padding: 8px 16px;
@@ -58,10 +51,76 @@
       .btn-green:hover {
         background: #157a5a;
       }
-      .count {
-        font-size: 0.85rem;
-        color: #666;
+      .btn-red {
+        background: #e74c3c;
       }
+      .btn-red:hover {
+        background: #c0392b;
+      }
+
+      .filters {
+        background: #fff;
+        border: 1px solid #e0ddd6;
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+      .filters-title {
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #999;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #eee;
+      }
+      .filters-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: flex-end;
+      }
+      .filter-field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex: 0 1 auto;
+      }
+      .filter-field.text-field {
+        min-width: 180px;
+      }
+      .filter-field.select-field {
+        min-width: 140px;
+      }
+      .filter-field label {
+        font-size: 0.75rem;
+        color: #555;
+        font-weight: 500;
+        white-space: nowrap;
+      }
+      .filter-field input,
+      .filter-field select {
+        font-family: inherit;
+        font-size: 0.85rem;
+        padding: 7px 10px;
+        border: 1px solid #d4d1cb;
+        border-radius: 8px;
+        background: #fafafa;
+        color: #1a1a1a;
+        outline: none;
+        width: 100%;
+      }
+      .filter-field input:focus,
+      .filter-field select:focus {
+        border-color: #7f77dd;
+        box-shadow: 0 0 0 3px rgba(127, 119, 221, 0.12);
+        background: #fff;
+      }
+      .filters-actions {
+        margin-top: 1rem;
+      }
+
       .table-wrap {
         overflow-x: auto;
         background: #fff;
@@ -83,6 +142,17 @@
         color: #888;
         border-bottom: 1px solid #eee;
         white-space: nowrap;
+        cursor: pointer;
+        user-select: none;
+      }
+      th:hover {
+        background: #f0ede8;
+      }
+      th.sorted-asc::after {
+        content: " ▲";
+      }
+      th.sorted-desc::after {
+        content: " ▼";
       }
       td {
         padding: 10px 12px;
@@ -128,13 +198,6 @@
         <p class="count" id="count">Cargando...</p>
       </div>
       <div style="display: flex; gap: 8px; flex-wrap: wrap">
-        <input
-          class="search"
-          type="text"
-          id="buscar"
-          placeholder="Buscar por nombre..."
-          oninput="filtrar()"
-        />
         <button class="btn btn-green" onclick="exportarCSV()">
           ⬇ Exportar CSV
         </button>
@@ -144,21 +207,90 @@
       </div>
     </div>
 
+    <div class="filters">
+      <div class="filters-title">Filtros</div>
+      <div class="filters-grid">
+        <div class="filter-field text-field">
+          <label>Nombre padre/madre</label>
+          <input
+            type="text"
+            id="f-nombre-padre"
+            placeholder="Buscar..."
+            oninput="filtrar()"
+          />
+        </div>
+        <div class="filter-field text-field">
+          <label>Nombre menor</label>
+          <input
+            type="text"
+            id="f-nombre-hijo"
+            placeholder="Buscar..."
+            oninput="filtrar()"
+          />
+        </div>
+        <div class="filter-field select-field">
+          <label>Discapacidad</label>
+          <select id="f-discapacidad" onchange="filtrar()">
+            <option value="">Todos</option>
+            <option value="si">Sí</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+        <div class="filter-field select-field">
+          <label>Derivación SS</label>
+          <select id="f-derivacion-ss" onchange="filtrar()">
+            <option value="">Todos</option>
+            <option value="si">Sí</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+        <div class="filter-field select-field">
+          <label>Derivación GADIR</label>
+          <select id="f-derivacion-gadir" onchange="filtrar()">
+            <option value="">Todos</option>
+            <option value="si">Sí</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+        <div class="filter-field select-field">
+          <label>Auth. actividades</label>
+          <select id="f-auth-act" onchange="filtrar()">
+            <option value="">Todos</option>
+            <option value="1">Autorizado</option>
+            <option value="0">No autorizado</option>
+          </select>
+        </div>
+        <div class="filter-field select-field">
+          <label>Auth. imágenes</label>
+          <select id="f-auth-img" onchange="filtrar()">
+            <option value="">Todos</option>
+            <option value="1">Autorizado</option>
+            <option value="0">No autorizado</option>
+          </select>
+        </div>
+      </div>
+      <div class="filters-actions">
+        <button class="btn btn-red" onclick="limpiarFiltros()">
+          ✕ Limpiar filtros
+        </button>
+      </div>
+    </div>
+
     <div class="table-wrap">
       <table>
         <thead>
           <tr>
-            <th>#</th>
-            <th>Padre/Madre</th>
-            <th>Teléfono</th>
-            <th>Email</th>
-            <th>Menor</th>
-            <th>F. Nacimiento</th>
-            <th>Colegio</th>
-            <th>Curso</th>
-            <th>Discapacidad</th>
-            <th>Der. SS</th>
-            <th>Der. GADIR</th>
+            <th onclick="ordenar('id')">#</th>
+            <th onclick="ordenar('nombre_padre')">Padre/Madre</th>
+            <th onclick="ordenar('telefono')">Teléfono</th>
+            <th onclick="ordenar('email')">Email</th>
+            <th onclick="ordenar('nombre_hijo')">Menor</th>
+            <th onclick="ordenar('fecha_nacimiento')">F. Nacimiento</th>
+            <th onclick="ordenar('colegio')">Colegio</th>
+            <th onclick="ordenar('curso')">Curso</th>
+            <th onclick="ordenar('discapacidad')">Discapacidad</th>
+            <th onclick="ordenar('derivacion_ss')">Der. SS</th>
+            <th onclick="ordenar('derivacion_gadir')">Der. GADIR</th>
             <th>Auth. Act.</th>
             <th>Auth. Img.</th>
             <th>Comentario</th>
@@ -171,70 +303,148 @@
     <script>
       const pass = new URLSearchParams(window.location.search).get("pass");
       let todos = [];
+      let sortCol = "id";
+      let sortDir = "asc";
 
       async function cargar() {
         try {
           const res = await fetch("/admin?pass=" + encodeURIComponent(pass));
           todos = await res.json();
-          renderizar(todos);
-          document.getElementById("count").textContent =
-            todos.length + " inscripciones";
+          filtrar();
         } catch (e) {
           document.getElementById("tabla").innerHTML =
             '<tr><td colspan="14" class="empty">Error al cargar los datos</td></tr>';
         }
       }
 
-      function badge(val, siLabel, noLabel) {
+      function filtrar() {
+        const fNombrePadre = document
+          .getElementById("f-nombre-padre")
+          .value.toLowerCase()
+          .trim();
+        const fNombreHijo = document
+          .getElementById("f-nombre-hijo")
+          .value.toLowerCase()
+          .trim();
+        const fDiscapacidad = document.getElementById("f-discapacidad").value;
+        const fDerivSS = document.getElementById("f-derivacion-ss").value;
+        const fDerivGadir = document.getElementById("f-derivacion-gadir").value;
+        const fAuthAct = document.getElementById("f-auth-act").value;
+        const fAuthImg = document.getElementById("f-auth-img").value;
+
+        const filtrados = todos.filter((d) => {
+          if (
+            fNombrePadre &&
+            !d.nombre_padre.toLowerCase().includes(fNombrePadre)
+          )
+            return false;
+          if (fNombreHijo && !d.nombre_hijo.toLowerCase().includes(fNombreHijo))
+            return false;
+          if (fDiscapacidad && d.discapacidad !== fDiscapacidad) return false;
+          if (fDerivSS && d.derivacion_ss !== fDerivSS) return false;
+          if (fDerivGadir && d.derivacion_gadir !== fDerivGadir) return false;
+          if (fAuthAct !== "" && String(d.auth_actividades) !== fAuthAct)
+            return false;
+          if (fAuthImg !== "" && String(d.auth_imagenes) !== fAuthImg)
+            return false;
+          return true;
+        });
+
+        const ordenados = [...filtrados].sort((a, b) => {
+          let va = a[sortCol],
+            vb = b[sortCol];
+          if (typeof va === "string") va = va.toLowerCase();
+          if (typeof vb === "string") vb = vb.toLowerCase();
+          if (va < vb) return sortDir === "asc" ? -1 : 1;
+          if (va > vb) return sortDir === "asc" ? 1 : -1;
+          return 0;
+        });
+
+        renderizar(ordenados);
+        document.getElementById("count").textContent =
+          ordenados.length + " de " + todos.length + " inscripciones";
+      }
+
+      function ordenar(col) {
+        if (sortCol === col) sortDir = sortDir === "asc" ? "desc" : "asc";
+        else {
+          sortCol = col;
+          sortDir = "asc";
+        }
+        document
+          .querySelectorAll("th")
+          .forEach((th) => th.classList.remove("sorted-asc", "sorted-desc"));
+        const cols = [
+          "id",
+          "nombre_padre",
+          "telefono",
+          "email",
+          "nombre_hijo",
+          "fecha_nacimiento",
+          "colegio",
+          "curso",
+          "discapacidad",
+          "derivacion_ss",
+          "derivacion_gadir",
+          "auth_actividades",
+          "auth_imagenes",
+          "comentario",
+        ];
+        const idx = cols.indexOf(col);
+        if (idx >= 0)
+          document
+            .querySelectorAll("th")
+            [
+              idx
+            ].classList.add(sortDir === "asc" ? "sorted-asc" : "sorted-desc");
+        filtrar();
+      }
+
+      function limpiarFiltros() {
+        document.getElementById("f-nombre-padre").value = "";
+        document.getElementById("f-nombre-hijo").value = "";
+        document.getElementById("f-discapacidad").value = "";
+        document.getElementById("f-derivacion-ss").value = "";
+        document.getElementById("f-derivacion-gadir").value = "";
+        document.getElementById("f-auth-act").value = "";
+        document.getElementById("f-auth-img").value = "";
+        filtrar();
+      }
+
+      function badge(val) {
         const esSi = val === "si" || val === 1 || val === true;
-        return `<span class="badge ${esSi ? "badge-si" : "badge-no"}">${esSi ? siLabel || "Sí" : noLabel || "No"}</span>`;
+        return `<span class="badge ${esSi ? "badge-si" : "badge-no"}">${esSi ? "Sí" : "No"}</span>`;
       }
 
       function renderizar(datos) {
         const tbody = document.getElementById("tabla");
         if (!datos.length) {
           tbody.innerHTML =
-            '<tr><td colspan="14" class="empty">No hay inscripciones</td></tr>';
+            '<tr><td colspan="14" class="empty">No hay inscripciones con estos filtros</td></tr>';
           return;
         }
         tbody.innerHTML = datos
           .map(
-            (d, i) => `
-              <tr>
-                <td>${d.id}</td>
-                <td><strong>${d.nombre_padre}</strong><br><small style="color:#888">${d.direccion}</small></td>
-                <td>${d.telefono}</td>
-                <td>${d.email}</td>
-                <td><strong>${d.nombre_hijo}</strong></td>
-                <td>${d.fecha_nacimiento}</td>
-                <td>${d.colegio}</td>
-                <td>${d.curso}</td>
-                <td>${badge(d.discapacidad)}</td>
-                <td>${badge(d.derivacion_ss)}</td>
-                <td>${badge(d.derivacion_gadir)}</td>
-                <td>${d.auth_actividades ? '<span class="badge badge-auth">✓</span>' : '<span class="badge badge-no">✗</span>'}</td>
-                <td>${d.auth_imagenes ? '<span class="badge badge-auth">✓</span>' : '<span class="badge badge-no">✗</span>'}</td>
-                <td>${d.comentario}</td>
-              </tr>
-            `,
+            (d) => `
+        <tr>
+          <td>${d.id}</td>
+          <td><strong>${d.nombre_padre}</strong><br><small style="color:#888">${d.direccion}</small></td>
+          <td>${d.telefono}</td>
+          <td>${d.email}</td>
+          <td><strong>${d.nombre_hijo}</strong></td>
+          <td>${d.fecha_nacimiento}</td>
+          <td>${d.colegio}</td>
+          <td>${d.curso}</td>
+          <td>${badge(d.discapacidad)}</td>
+          <td>${badge(d.derivacion_ss)}</td>
+          <td>${badge(d.derivacion_gadir)}</td>
+          <td>${d.auth_actividades ? '<span class="badge badge-auth">✓</span>' : '<span class="badge badge-no">✗</span>'}</td>
+          <td>${d.auth_imagenes ? '<span class="badge badge-auth">✓</span>' : '<span class="badge badge-no">✗</span>'}</td>
+          <td>${d.comentario || ""}</td>
+        </tr>
+      `,
           )
           .join("");
-      }
-
-      function filtrar() {
-        const q = document.getElementById("buscar").value.toLowerCase().trim();
-        if (!q) {
-          renderizar(todos);
-          document.getElementById("count").textContent =
-            todos.length + " inscripciones";
-          return;
-        }
-        const filtrados = todos.filter((d) =>
-          Object.values(d).some((v) => String(v).toLowerCase().includes(q)),
-        );
-        renderizar(filtrados);
-        document.getElementById("count").textContent =
-          filtrados.length + " de " + todos.length + " inscripciones";
       }
 
       function exportarCSV() {
