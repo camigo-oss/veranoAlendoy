@@ -423,9 +423,8 @@
         document.getElementById("f-auth-img").value = "";
         filtrar();
       }
-
       function badge(val) {
-        const esSi = val === "si" || val === 1 || val === true;
+        const esSi = val?.toLowerCase() === "si" || val === 1 || val === true;
         return `<span class="badge ${esSi ? "badge-si" : "badge-no"}">${esSi ? "Sí" : "No"}</span>`;
       }
 
